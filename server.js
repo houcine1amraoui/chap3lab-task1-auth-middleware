@@ -25,6 +25,17 @@ let posts = [
   },
 ];
 
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+  const newUser = {
+    username,
+    password,
+  };
+  users.push(newUser);
+  console.log(users);
+  return res.json(newUser);
+});
+
 // get post of a specific user
 // user should authenticate
 // then authorization is performed based on username
@@ -63,5 +74,5 @@ function auth(req, res, next) {
 
 const PORT = 1000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
