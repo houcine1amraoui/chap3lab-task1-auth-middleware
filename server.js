@@ -25,51 +25,58 @@ let posts = [
   },
 ];
 
-app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-  const newUser = {
-    username,
-    password,
-  };
-  users.push(newUser);
-  console.log(users);
-  return res.json(newUser);
-});
-
 // get post of a specific user
 // user should authenticate
 // then authorization is performed based on username
-app.get("/posts", auth, async (req, res) => {
+app.get("/posts", passwordAuth, async (req, res) => {
   const username = req.body.username;
   res.json(posts.filter((post) => post.author === username));
 });
 
 // create a post by a specific user
 // user should authenticate
-app.post("/posts", auth, async (req, res) => {
+app.post("/posts", passwordAuth, async (req, res) => {
   const { title, username } = req.body;
+  if (!title) {
+    return res.send("Post's title is required");
+  }
   const newPost = { title, author: username };
   posts.push(newPost);
-  res.json(newPost);
+  res.status(200).send("Post successfully created");
 });
 
-// also called sigin
-function auth(req, res, next) {
+// Also called sign up
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
-  if (username && password) {
-    const result = users.filter((user) => {
-      return user.username === username;
-    });
-    if (result.length > 0) {
-      if (result[0].password === password) {
-        next();
-      } else {
-        return res.send("Invalid username or password");
-      }
-    }
-  } else {
+  // Check username and password value existence
+  if (!username || !password) {
     return res.send("Both username and password are required");
   }
+  const newUser = {
+    username,
+    password,
+  };
+  users.push(newUser);
+  return res.status(200).json("Account successfully created");
+});
+
+// Also called sign in
+function passwordAuth(req, res, next) {
+  const { username, password } = req.body;
+  // Check username and password value existence
+  if (!username || !password) {
+    return res.send("Both username and password are required");
+  }
+  // Check user existence
+  const exist = users.find((user) => user.username === username);
+  if (!exist) {
+    return res.send("Invalid username or password");
+  }
+  // Check password matching
+  if (exist.password !== password) {
+    return res.send("Invalid username or password");
+  }
+  next();
 }
 
 const PORT = 1000;
