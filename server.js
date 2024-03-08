@@ -28,14 +28,14 @@ let posts = [
 // get post of a specific user
 // user should authenticate
 // then authorization is performed based on username
-app.get("/posts", passwordAuth, async (req, res) => {
+app.get("/posts", login, async (req, res) => {
   const username = req.body.username;
   res.json(posts.filter((post) => post.author === username));
 });
 
 // create a post by a specific user
 // user should authenticate
-app.post("/posts", passwordAuth, async (req, res) => {
+app.post("/posts", login, async (req, res) => {
   const { title, username } = req.body;
   if (!title) {
     return res.send("Post's title is required");
@@ -61,7 +61,7 @@ app.post("/register", async (req, res) => {
 });
 
 // Also called sign in
-function passwordAuth(req, res, next) {
+function login(req, res, next) {
   const { username, password } = req.body;
   // Check username and password value existence
   if (!username || !password) {
