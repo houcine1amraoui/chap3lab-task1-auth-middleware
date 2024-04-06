@@ -1,8 +1,12 @@
 import express from "express";
 
 const app = express();
-app.use(express.json());
 
+app.use(express.json());
+// app.use(logger);
+
+// app.use(logger);
+app.use(login);
 let users = [
   {
     username: "mohamed-msila",
@@ -25,17 +29,35 @@ let posts = [
   },
 ];
 
+// a middleware is any function that is called and run
+// between the time the server gets the request
+// and the time the server sends a response to the client
+
+function logger(req, res, next) {
+  console.log("Hello1 from console");
+  next();
+}
+
+app.get("/hello", (req, res) => {
+  return res.send("Hello from console");
+});
+
+app.get("/hello2", (req, res) => {
+  console.log("hello endpoint");
+  return res.send("Hello2");
+});
+
 // get post of a specific user
 // user should authenticate
 // then authorization is performed based on username
-app.get("/posts", login, async (req, res) => {
+app.get("/posts", async (req, res) => {
   const username = req.body.username;
   res.json(posts.filter((post) => post.author === username));
 });
 
 // create a post by a specific user
 // user should authenticate
-app.post("/posts", login, async (req, res) => {
+app.post("/posts", async (req, res) => {
   const { title, username } = req.body;
   if (!title) {
     return res.send("Post's title is required");
