@@ -50,14 +50,14 @@ app.get("/hello2", (req, res) => {
 // get post of a specific user
 // user should authenticate
 // then authorization is performed based on username
-app.get("/posts", async (req, res) => {
+app.get("/posts", login, async (req, res) => {
   const username = req.body.username;
   res.json(posts.filter((post) => post.author === username));
 });
 
 // create a post by a specific user
 // user should authenticate
-app.post("/posts", async (req, res) => {
+app.post("/posts", login, async (req, res) => {
   const { title, username } = req.body;
   if (!title) {
     return res.send("Post's title is required");
