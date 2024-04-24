@@ -57,7 +57,7 @@ app.get("/posts", login, async (req, res) => {
 
 // create a post by a specific user
 // user should authenticate
-app.post("/posts", login, async (req, res) => {
+app.post("/posts", async (req, res) => {
   const { title, username } = req.body;
   if (!title) {
     return res.send("Post's title is required");
